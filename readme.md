@@ -31,12 +31,12 @@ To use the package, proceed as follows:
    respective assignment:
 
     ```python
-    import uppraise
+    from uppraisal.uppraisal import upload_appraisals
     
     at = "VOIC57KB4OP35PXHTR1BI152F9XMF7683IAQG5SBRFVZBRUFHJIYPBEYTKI9J6LH69UFM3"
     filepath = "./assignment_data.xlsx"
     course_id = 101010
     assignment_id = 101010
-    result = uppraise.upload_appraisals(at, filepath, course_id, assignment_id)
+    result = upload_appraisals(at, filepath, course_id, assignment_id)
     print(result)
     ```

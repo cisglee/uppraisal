@@ -18,7 +18,7 @@ def getexcel(in_filepath, worksheet, include_fieldnames=None, exclude_fieldnames
     :param exclude_fieldnames: list of fieldnames that should be ignored when retrieving data from Excel workbook
     :type exclude_fieldnames: list
     :param has_headers: Boolean indicating whether workbook has headers in the first row (True) or not (False)
-    :type has_heasers: bool
+    :type has_headers: bool
     :param return_headers: Boolean indicating whether the headers should be returned
     :type return_headers: bool
     :param capital_sensitive: Boolean indicating whether include_fieldnames or exclude_fieldnames should be sensitive to capitalization
@@ -102,7 +102,7 @@ def getexcel(in_filepath, worksheet, include_fieldnames=None, exclude_fieldnames
                 # If not include or exclude fieldnames, include_fieldnames is set to all fieldnames
                 org_fieldnames = worksheet.row_values(curr_row)
 
-            if has_headers == True and return_headers == True:
+            if has_headers and return_headers:
                 data.append(org_fieldnames)
 
         else:
@@ -111,7 +111,7 @@ def getexcel(in_filepath, worksheet, include_fieldnames=None, exclude_fieldnames
             while curr_cell < num_cells:
                 curr_cell += 1
                 fieldnr = fieldmap[curr_cell]
-                if fieldnr != None:
+                if fieldnr is not None:
                     row_data[fieldnr] = worksheet.cell_value(curr_row, curr_cell)
 
             data.append(row_data)

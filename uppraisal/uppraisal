@@ -5,22 +5,25 @@ import time
 
 import requests
 
-from tools.getexcel import getexcel
+from uppraisal.helpers import getexcel
 
 
 def upload_appraisal(cv_access_token, workbook_path, cv_id_course, cv_id_assignment,
                      submission_comment_header="submission_comment", grade_header="grade", workbook_tab=0):
     """Upload assignment comments and grades from an excel workbook, one assignment at a time.
 
-    :param cv_access_token: Canvas access token (generally 70 characters in length; see https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
+    :param cv_access_token: Canvas access token (generally 70 characters in length; see
+    https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
     :type cv_access_token: str
-    :param workbook_path: File path to workbook containing grade and comment data, with Canvas sis_user_id's included under the header "sis_user_id".
+    :param workbook_path: File path to workbook containing grade and comment data, with Canvas sis_user_id's included
+    under the header "sis_user_id".
     :type workbook_path: str
     :param cv_id_course: Course identifier (see Canvas course URL).
     :type cv_id_course: int
     :param cv_id_assignment: Assignment identifier (see Canvas assignment URL).
     :type cv_id_assignment: int
-    :param submission_comment_header: Header of the submission comment column in the Excel workbook. Default is "submission_comment".
+    :param submission_comment_header: Header of the submission comment column in the Excel workbook. Default is
+    "submission_comment".
     :type submission_comment_header: str
     :param grade_header: Header of the grades column in the Excel workbook. Default is "grade".
     :type grade_header: str
@@ -53,15 +56,18 @@ def upload_appraisals(cv_access_token, workbook_path, cv_id_course, cv_id_assign
                       submission_comment_header="submission_comment", grade_header="grade", workbook_tab=0):
     """Upload assignment comments and grades from an excel workbook, with multiple assignments per post.
 
-    :param cv_access_token: Canvas access token (generally 70 characters in length; see https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
+    :param cv_access_token: Canvas access token (generally 70 characters in length; see
+    https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
     :type cv_access_token: str
-    :param workbook_path: File path to workbook containing grade and comment data, with Canvas sis_user_id's included under the header "sis_user_id".
+    :param workbook_path: File path to workbook containing grade and comment data, with Canvas sis_user_id's
+    included under the header "sis_user_id".
     :type workbook_path: str
     :param cv_id_course: Course identifier (see Canvas course URL).
     :type cv_id_course: int
     :param cv_id_assignment: Assignment identifier (see Canvas assignment URL).
     :type cv_id_assignment: int
-    :param submission_comment_header: Header of the submission comment column in the Excel workbook. Default is "submission_comment".
+    :param submission_comment_header: Header of the submission comment column in the Excel workbook. Default is
+    "submission_comment".
     :type submission_comment_header: str
     :param grade_header: Header of the grades column in the Excel workbook. Default is "grade".
     :type grade_header: str
