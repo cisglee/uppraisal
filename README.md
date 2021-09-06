@@ -30,13 +30,8 @@ To use the package, proceed as follows:
    with the assignment data, the `course_id` is the ID for the respective course and `assignment_id` is the ID for the
    respective assignment:
 
-    ```python
-    from uppraisal.uppraisal import upload_appraisals
-    
-    canvas_access_token = "VOIC57KB4OP35PXHTR1BI152F9XMF7683IAQG5SBRFVZBRUFHJIYPBEYTKI9J6LH69UFM3"
-    filepath = "./assignment_data.xlsx"
-    course_id = 101010
-    assignment_id = 101010
-    result = upload_appraisals(canvas_access_token, filepath, course_id, assignment_id)
-    print(result)
+    ```shell
+    $ ./main.py -c [course_id] -a [assignment_id] -t [access_token] filepath
     ```
+
+ 
