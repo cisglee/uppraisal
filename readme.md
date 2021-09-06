@@ -20,9 +20,9 @@ $ pip install -r requirements.txt
 
 To use the package, proceed as follows:
 
-1. Create a workbook with a `sis_user_id` column containing the Canvas IDs of the students, a column containing
-   comments (default name `submission_comment`), and a column containing grades (default name `grade`). Next, get an
-   access token from your Canvas profile settings (for more information, see
+1. Create a workbook with a `user_id` column containing the Canvas IDs of the students, a column containing comments (
+   default name `submission_comment`), and a column containing grades (default name `grade`). Next, get an access token
+   from your Canvas profile settings (for more information, see
    https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
 2. Get the relevant course id from Canvas (can be found in the URL when you go to the course in your browser).
 3. Get the relevant assignment id from Canvas (can be found in the URL when you go to the assignment in your browser).
@@ -33,10 +33,10 @@ To use the package, proceed as follows:
     ```python
     from uppraisal.uppraisal import upload_appraisals
     
-    at = "VOIC57KB4OP35PXHTR1BI152F9XMF7683IAQG5SBRFVZBRUFHJIYPBEYTKI9J6LH69UFM3"
+    canvas_access_token = "VOIC57KB4OP35PXHTR1BI152F9XMF7683IAQG5SBRFVZBRUFHJIYPBEYTKI9J6LH69UFM3"
     filepath = "./assignment_data.xlsx"
     course_id = 101010
     assignment_id = 101010
-    result = upload_appraisals(at, filepath, course_id, assignment_id)
+    result = upload_appraisals(canvas_access_token, filepath, course_id, assignment_id)
     print(result)
     ```

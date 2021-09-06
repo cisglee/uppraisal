@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import warnings
 from copy import deepcopy
 
+import requests
 import xlrd
+import xlwt
 
 
 def getexcel(in_filepath, worksheet, include_fieldnames=None, exclude_fieldnames=None, has_headers=True,
@@ -41,7 +44,7 @@ def getexcel(in_filepath, worksheet, include_fieldnames=None, exclude_fieldnames
             "Arguments \"capital_sensitive\" and \"ignore_missing_headers\" have no effect when there are no headers.")
 
     workbook = xlrd.open_workbook(in_filepath)
-    if not worksheet:
+    if worksheet is None:
         raise IOError("The name or index number of the worksheet has not been specified.")
     elif type(worksheet) == int:
         worksheet = workbook.sheet_by_index(worksheet)
@@ -126,3 +129,168 @@ def getexcel(in_filepath, worksheet, include_fieldnames=None, exclude_fieldnames
             raise IOError("The following fieldnames could not be found: {}".format(", ".join(missing)))
 
     return data
+
+
+def putexcel(data, out_filepath, worksheet_names=None):
+    """Method for writing data from a list of lists to Excel
+
+    :Examples:
+
+    >>> dat = [["Header 1", "Header 2", "Header 3"], ["row 1 cell 1", "row 1 cell 2", "row 1 cell 3"], ["row 2 cell 1", "row 2 cell 2", "row 3 cell 3"], ["row 3 cell 1", "row 3 cell 2", "row 3 cell 3"]]
+    >>> putexcel(dat, "./example1.xls") # Example writing to a single worksheet
+    >>> dat = [[["Header 1", "Header 2", "Header 3"], ["row 1 cell 1", "row 1 cell 2", "row 1 cell 3"], ["row 2 cell 1", "row 2 cell 2", "row 3 cell 3"], ["row 3 cell 1", "row 3 cell 2", "row 3 cell 3"]], [["Header 4", "Header 5", "Header 6"], ["row 4 cell 1", "row 4 cell 2", "row 4 cell 3"], ["row 5 cell 1", "row 5 cell 2", "row 5 cell 3"], ["row 6 cell 1", "row 6 cell 2", "row 6 cell 3"]], [["Header 7", "Header 8", "Header 9"], ["row 7 cell 1", "row 7 cell 2", "row 7 cell 3"], ["row 8 cell 1", "row 8 cell 2", "row 8 cell 3"], ["row 9 cell 1", "row 9 cell 2", "row 9 cell 3"]]]
+    >>> putexcel(dat, "./example2.xls", worksheet_names=["WS1", "WS2", "WS3"]) # Example writing to multiple worksheets
+
+    :param data: List of lists containing the data that should be written to Excel.
+    :type data: list
+    :param out_filepath: File path pointing to location and file name to which the data should be written.
+    :type out_filepath: str
+    :param worksheet_names: List of names of worksheets to which the data should be written or string name for the
+    worksheet.
+    :type worksheet_names: list or str
+    :return: None
+    """
+    wb = xlwt.Workbook()
+    l = 3 if isinstance(data[0][0], list) else 2
+    if l == 2:
+        # If data is list of rows, structure as if it were a list containing lists of rows
+        if worksheet_names:
+            if isinstance(worksheet_names, str):
+                worksheet_names = [worksheet_names]
+        data = [data]
+        l = 3
+
+    if l == 3:
+        # If data is list containing lists of rows create a worksheet for every list of rows
+        # Check if there are names for every worksheet
+        if worksheet_names:
+            if len(data) != len(worksheet_names):
+                raise IOError("Data structure indicates {} worksheet, but {} worksheet name{} been provided".format(
+                    len(data), len(worksheet_names), "s have" if len(worksheet_names) > 1 else " has"
+                ))
+        else:
+            worksheet_names = ["Sheet{}".format(i + 1) for i in range(len(data))]
+
+        for wsname, wsdat in zip(worksheet_names, data):
+            ws = wb.add_sheet(wsname)
+            for row_j, row in enumerate(wsdat):
+                for cell_i, cell in enumerate(row):
+                    ws.write(row_j, cell_i, cell)
+
+        wb.save(out_filepath)
+
+    return
+
+
+def list_submissions(cv_access_token, cv_id_course, cv_id_assignment, sort_by='user_sortable_name',
+                     to_excel='./assignment_data.xls', select_columns=(
+                'user_id', 'user_sortable_name', 'grade',
+                'score', 'submitted_at', 'preview_url', 'attachments'
+        )):
+    """Retrieve submission meta data for a Canvas assignment
+
+    :param cv_access_token: Canvas access token (generally 70 characters in length; see
+    https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
+    :type cv_access_token: str
+    :param cv_id_course: Course identifier (see Canvas course URL).
+    :type cv_id_course: int
+    :param cv_id_assignment: Assignment identifier (see Canvas assignment URL).
+    :type cv_id_assignment: int
+    :param sort_by: Assignment meta data column by which the return data should be sorted (e.g., 'submitted_at'). Default
+    is 'user_sortable_name'.
+    :type sort_by: str
+    :param select_columns: List with column names to return or None if all meta data should be returned.
+    :type select_columns: None or list
+    :return: List of dictionary items containing meta data for assignments submitted to assignment id `cv_id_assignment`
+    :rtype: list
+    """
+
+    def _filter_assignments(rbuffer):
+        assignments = []
+        raw = rbuffer.json()
+        for assignment in raw:
+            if assignment['submitted_at']:
+                if 'user' in assignment:
+                    for key in assignment['user'].keys():
+                        assignment['user_' + key] = assignment['user'][key]
+                    del assignment['user']
+                if 'attachments' in assignment:
+                    attachments = []
+                    for attachment in assignment['attachments']:
+                        attachments.append(attachment['filename'])
+                    assignment['attachments'] = '; '.join(attachments)
+                if select_columns:
+                    remove_columns = []
+                    for col in assignment:
+                        if col not in select_columns:
+                            remove_columns.append(col)
+                    for col in remove_columns:
+                        del assignment[col]
+                assignments.append(assignment)
+        return assignments
+
+    if sort_by and select_columns and sort_by not in select_columns:
+        raise IOError('The column specified for sortby must be in the list of columns you would like to be returned')
+
+    params = {'grouped': True, 'per_page': 100, 'include': 'user'}
+    headers = {'Authorization': 'Bearer {}'.format(cv_access_token), 'Content-type': 'application/json'}
+    assignments = []
+    rbuffer = requests.get('https://canvas.eur.nl/api/v1/courses/{cid}/assignments/{aid}/submissions'.format(
+        cid=cv_id_course,
+        aid=cv_id_assignment
+    ),
+        headers=headers,
+        params=params,
+    )
+
+    assignments += _filter_assignments(rbuffer)
+    while rbuffer.links['current']['url'] != rbuffer.links['last']['url']:
+        rbuffer = requests.get(
+            rbuffer.links['next']['url'],
+            headers=headers,
+            params=params,
+        )
+        assignments += _filter_assignments(rbuffer)
+
+    if sort_by in assignments[0]:
+        assignments.sort(key=lambda k: k[sort_by])
+    else:
+        if type(sort_by) == str:
+            warnings.warn('The specified sort key (i.e., {}) was not found'.format(sort_by))
+        else:
+            warnings.warn('The parameter sortby should be a string'.format(sort_by))
+
+    headers = []
+    if select_columns:
+        headers = list(select_columns)
+    else:
+        for assignment in assignments:
+            headers.append(assignment.keys())
+        headers = list(set(headers))
+
+    assignment_list = [headers]
+    for assignment in assignments:
+        assignment_row = []
+        for header in headers:
+            assignment_row.append(assignment[header])
+        assignment_list.append(assignment_row)
+
+    if to_excel:
+        putexcel(assignment_list, to_excel)
+
+    return assignments
+
+
+def chunker(seq, size):
+    """Chunks a list of items to help reduce the API load
+
+    :source: https://stackoverflow.com/a/434328
+    :param seq: array over which to loop
+    :rtype seq: list
+    :param size: size of chunks
+    :rtype size: int
+    :return: chunked list
+    :rtype: list
+    """
+    # (in python 2 use xrange() instead of range() to avoid allocating a list)
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
