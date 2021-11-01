@@ -18,5 +18,5 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
-    install_requires=['requests', 'xlrd>=1.0.0', 'xlwt', 'urllib3', 'tqdm'],
+    install_requires=['requests', 'urllib3', 'tqdm', 'openpyxl', 'et-xmlfile', 'bs4'],
 )

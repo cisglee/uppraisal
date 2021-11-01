@@ -22,6 +22,7 @@ DEFAULT_SELECT_COLUMNS: _tp.Tuple[str, ...] = (
 
 DEFAULT_OUT_FILEPATH: str = './assignment_data.xls'
 
+DEFAULT_HTML_FORMAT: bool = False
 DEFAULT_SUBMISSION_COMMENT_HEADER: str = 'submission_comment'
 DEFAULT_GRADE_HEADER: str = 'grade'
 DEFAULT_WORKBOOK_TAB: str = 'Sheet1'

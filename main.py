@@ -26,6 +26,12 @@ if __name__ == '__main__':
         required=True
     )
     parser.add_argument(
+        '-l', '--html',
+        help="Indicate whether the submission comments are in HTML",
+        type=bool,
+        required=False
+    )
+    parser.add_argument(
         'filepath',
         help="Specify an Excel file with the results",
         type=str,
@@ -37,7 +43,8 @@ if __name__ == '__main__':
         arguments.filepath,
         cv_access_token=arguments.token,
         cv_course_id=arguments.course,
-        cv_assignment_id=arguments.assignment
+        cv_assignment_id=arguments.assignment,
+        html_format=arguments.html
     )
 
     print(result)

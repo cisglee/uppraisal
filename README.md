@@ -26,9 +26,9 @@ To use the package, proceed as follows:
    https://canvas.instructure.com/courses/785215/pages/getting-started-with-the-api).
 2. Get the relevant course id from Canvas (can be found in the URL when you go to the course in your browser).
 3. Get the relevant assignment id from Canvas (can be found in the URL when you go to the assignment in your browser).
-4. Finally, run the package as follows, where `at` denotes access token, the `filepath` points to the Excel workbook
-   with the assignment data, the `course_id` is the ID for the respective course and `assignment_id` is the ID for the
-   respective assignment:
+4. Finally, run the package as follows, where the `filepath` points to the Excel workbook with the assignment data,
+   the `-c` is the ID for the respective course, `t` denotes access token, and `-a` is the ID for the respective
+   assignment:
 
     ```shell
     $ ./main.py -c [course_id] -a [assignment_id] -t [access_token] filepath
