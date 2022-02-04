@@ -1,4 +1,5 @@
 import typing as _tp
+from pathlib import Path
 
 CANVAS_BASE_URL: str = 'https://canvas.eur.nl/api/v1'
 CANVAS_COURSES_URL: str = CANVAS_BASE_URL + '/courses'
@@ -20,17 +21,17 @@ DEFAULT_SELECT_COLUMNS: _tp.Tuple[str, ...] = (
     'attachments'
 )
 
-DEFAULT_OUT_FILEPATH: str = './assignment_data.xls'
+BASE_DIR: Path = Path(__file__).absolute().parents[1]
+DEFAULT_OUT_FILEPATH: str = str((BASE_DIR / 'assignment_data.xlsx'))
 
 DEFAULT_HTML_FORMAT: bool = False
 DEFAULT_SUBMISSION_COMMENT_HEADER: str = 'submission_comment'
 DEFAULT_GRADE_HEADER: str = 'grade'
 DEFAULT_WORKBOOK_TAB: str = 'Sheet1'
 
-
 DEFAULT_CHUNK_SIZE = 100
 
-SLEEP_UPLOAD_APPRAISAL: float  = .02  # TODO Is this needed?
+SLEEP_UPLOAD_APPRAISAL: float = .02  # TODO Is this needed?
 SLEEP_UPLOAD_APPRAISALS: float = 30.0  # TODO Seems high
 
 del _tp

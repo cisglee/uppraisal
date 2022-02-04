@@ -18,5 +18,6 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
+    python_requires='~=3.6',
     install_requires=['requests', 'urllib3', 'tqdm', 'openpyxl', 'et-xmlfile', 'bs4'],
 )
