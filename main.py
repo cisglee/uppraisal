@@ -21,7 +21,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '-a', '--assignment',
-        help="Specify the Canvas course ID",
+        help="Specify the Canvas assignment ID",
         type=int,
         required=True
     )
